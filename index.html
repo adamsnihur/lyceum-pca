@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analiza Głównych Składowych (PCA) | Lyceum</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+  
+  <!-- Plotly.js CDN -->
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="text-slate-900 min-h-screen">
+
+  <!-- Top Navigation & Global Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+          L
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold tracking-wider uppercase text-blue-600">Lyceum • Machine Learning & Algebra</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">SaaS Light EdTech</span>
+          </div>
+          <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">Analiza Głównych Składowych (PCA)</h1>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="#module3" class="hidden md:inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+          ⚡ Sandbox 2D
+        </a>
+        <a href="#module4" class="hidden sm:inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+          📊 Scree Plot 3D
+        </a>
+        <a href="#module7" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm">
+          <span>🐍 Skrypt Python</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Module Navigation Strip -->
+    <nav class="bg-slate-50 border-t border-slate-200 overflow-x-auto text-xs py-2 px-4 sm:px-8 flex items-center gap-4 text-slate-600 font-medium whitespace-nowrap">
+      <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Spis Treści:</span>
+      <a href="#module1" class="hover:text-blue-600 transition-colors">1. Intuicja & Rzuty</a>
+      <a href="#module2" class="hover:text-blue-600 transition-colors">2. Dowód Analityczny</a>
+      <a href="#module3" class="hover:text-blue-600 transition-colors">3. Sandbox 2D</a>
+      <a href="#module4" class="hover:text-blue-600 transition-colors">4. Redukcja 3D & Scree</a>
+      <a href="#module5" class="hover:text-blue-600 transition-colors">5. Pułapki Praktyczne</a>
+      <a href="#module6" class="hover:text-blue-600 transition-colors">6. Quiz Sprawdzający</a>
+      <a href="#module7" class="hover:text-blue-600 transition-colors">7. Kod Python</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
+    <div class="saas-card p-6 sm:p-8 bg-gradient-to-br from-white via-white to-blue-50/40 border-slate-200">
+      <div class="max-w-3xl">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-100/70 text-blue-800 mb-3">
+          🎓 Standard Lyceum: Geometria • Wyprowadzenie Lagrange'a • Dotykowy Sandbox
+        </span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          Od Szumu Informacyjnego do Esencji Wymiarowości
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+          <strong>PCA (Principal Component Analysis)</strong> to fundamentalny algorytm nienadzorowanego uczenia maszynowego i algebry liniowej. Jego zadaniem jest znalezienie nowych, <strong>wzajemnie ortogonalnych osi współrzędnych</strong>, wzdłuż których wariancja (rozrzut) danych jest maksymalna. Pozwala to zredukować przestrzeń \(d\)-wymiarową do \(k\) wymiarów (\(k \ll d\)) przy minimalnej utracie informacji.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Ribbon -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-slate-200/80">
+        <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Kryterium Celu</div>
+          <div class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Maksymalizacja Wariancji</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">\(\iff\) Min. błędu rekonstrukcji</div>
+        </div>
+        <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Fundament Algebry</div>
+          <div class="text-base sm:text-lg font-bold text-blue-600 mt-0.5">\(\Sigma u = \lambda u\)</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">Wektory i wartości własne</div>
+        </div>
+        <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Kluczowa Własność</div>
+          <div class="text-base sm:text-lg font-bold text-emerald-600 mt-0.5">Kowariancja = 0</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">Całkowita de-korelacja cech</div>
+        </div>
+        <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Silnik Numeryczny</div>
+          <div class="text-base sm:text-lg font-bold text-amber-600 mt-0.5">SVD: \(X = U \Sigma V^T\)</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">Stabilność zmiennoprzecinkowa</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-24">
+
+    <!-- MODUŁ 1: Intuicja Geometryczna - Obrót i Rzuty -->
+    <section id="module1" class="saas-card p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+        <div>
+          <span class="badge-pill bg-blue-100 text-blue-800">Moduł 1</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+            Intuicja Geometryczna: Obrót Osi i Maksymalizacja Wariancji Rzutu
+          </h3>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hidden sm:inline-block">
+          Interaktywny symulator 60 FPS
+        </span>
+      </div>
+
+      <div class="prose max-w-none text-slate-600 text-sm leading-relaxed mb-6">
+        <p>
+          Wyobraź sobie chmurę punktów w przestrzeni dwuwymiarowej. Szukamy nowej prostej (kierunku rzutowania), która najlepiej reprezentuje te dane po zrzuceniu ich do 1 wymiaru. Czym jednak jest „najlepszy” kierunek?
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+          <div class="formula-callout">
+            <h4 class="font-bold text-slate-900 text-sm mb-1">Perspektywa 1: Maksymalizacja Wariancji Rzutu</h4>
+            <p class="text-xs text-slate-600 mb-2">
+              Chcemy, aby cienie (rzuty) punktów na nową oś były maksymalnie rozproszone. Jeśli wariancja rzutu byłaby bliska zera, wszystkie punkty zlałyby się w jedną plamę, niszcząc strukturę zbioru.
+            </p>
+            <div class="text-center font-mono-math text-blue-700 bg-white py-1.5 rounded border border-slate-200 text-xs">
+              \(\max_{u, \|u\|=1} \frac{1}{n} \sum_{i=1}^n (x_i \cdot u)^2\)
+            </div>
+          </div>
+          <div class="formula-callout-emerald">
+            <h4 class="font-bold text-slate-900 text-sm mb-1">Perspektywa 2: Minimalizacja Błędu Rekonstrukcji</h4>
+            <p class="text-xs text-slate-600 mb-2">
+              Chcemy, aby suma kwadratów prostopadłych odległości od punktów do prostej była jak najmniejsza. Z twierdzenia Pitagorasa: \(d_{\text{oryginalna}}^2 = d_{\text{rzut}}^2 + d_{\text{błąd}}^2\). Ponieważ suma \(d_{\text{oryginalna}}^2\) jest stała, <strong>maksymalizacja wariancji rzutu jest tożsama z minimalizacją błędu!</strong>
+            </p>
+            <div class="text-center font-mono-math text-emerald-700 bg-white py-1.5 rounded border border-slate-200 text-xs">
+              \(\min_{u, \|u\|=1} \frac{1}{n} \sum_{i=1}^n \|x_i - (x_i \cdot u)u\|^2\)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coachmark Box -->
+      <div class="coachmark-box mb-6">
+        <div class="flex items-start gap-3">
+          <span class="text-blue-600 text-lg leading-none">👉</span>
+          <div class="text-xs text-blue-900 leading-relaxed">
+            <strong>Jak z tego korzystać:</strong>
+            1. Przesuwaj suwak <strong>Kąt Projekcji \(\theta\)</strong> i obserwuj obrót niebieskiej osi.
+            2. Czerwone odcinki pokazują błąd rzutu każdego punktu na oś.
+            3. Spójrz na dolny wykres: punkt na krzywej wariancji wędruje w stronę globalnego szczytu.
+            4. Kliknij przycisk <strong>„Dopasuj do PC1 (Optimum)”</strong>, aby natychmiast zablokować kąt na kierunku głównej składowej.
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Canvas & Chart Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left: Controls & Readout Panel -->
+        <div class="lg:col-span-4 bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-5">
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label for="m1SliderAngle" class="text-xs font-bold text-slate-700">Kąt Osi Projekcji \(\theta\):</label>
+              <span id="m1ValAngle" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">45°</span>
+            </div>
+            <input type="range" id="m1SliderAngle" min="0" max="180" step="1" value="45">
+            <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+              <span>0° (Oś X)</span>
+              <span>90° (Oś Y)</span>
+              <span>180°</span>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex flex-col gap-2 pt-1">
+            <button id="m1BtnOptimum" class="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-sm">
+              <span>🎯 Dopasuj do PC1 (Maksimum Wariancji)</span>
+            </button>
+            <button id="m1BtnOrthogonal" class="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5">
+              <span>📐 Ustaw Prostopadle (PC2 - Min. Wariancji)</span>
+            </button>
+            <button id="m1BtnToggleAnimation" class="w-full py-2 px-3 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5">
+              <span id="m1AnimIcon">▶️</span> <span id="m1AnimLabel">Animuj pełny obrót 360°</span>
+            </button>
+          </div>
+
+          <!-- Metric Cards -->
+          <div class="space-y-2.5 pt-2 border-t border-slate-200">
+            <div class="bg-white p-3 rounded-lg border border-slate-200">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Wariancja Rzutu na Oś</div>
+              <div class="flex items-baseline justify-between mt-0.5">
+                <span id="m1OutVariance" class="font-mono text-lg font-bold text-blue-600">--</span>
+                <span id="m1OutVarPercent" class="text-xs font-semibold text-slate-500 font-mono">--%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 overflow-hidden">
+                <div id="m1BarVariance" class="bg-blue-600 h-full rounded-full transition-all duration-150" style="width: 50%"></div>
+              </div>
+            </div>
+
+            <div class="bg-white p-3 rounded-lg border border-slate-200">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Średni Błąd Rekonstrukcji (MSE)</div>
+              <div class="flex items-baseline justify-between mt-0.5">
+                <span id="m1OutMSE" class="font-mono text-lg font-bold text-rose-600">--</span>
+                <span class="text-[10px] text-slate-400">suma kwadratów odległości</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 overflow-hidden">
+                <div id="m1BarMSE" class="bg-rose-500 h-full rounded-full transition-all duration-150" style="width: 50%"></div>
+              </div>
+            </div>
+
+            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+              <div class="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">Status Osi</div>
+              <div id="m1OutStatus" class="text-xs font-bold text-emerald-900 mt-0.5">Obracanie osi...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Geometry Visualizer Canvas & Variance Curve -->
+        <div class="lg:col-span-8 space-y-4">
+          <!-- Main Canvas -->
+          <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-inner flex flex-col items-center">
+            <div class="w-full flex justify-between items-center text-xs text-slate-500 mb-2 px-1">
+              <span class="font-semibold text-slate-700">Płaszczyzna Danych 2D z Rzutami Prostopadłymi</span>
+              <span class="font-mono text-[11px]">N = 40 punktów (centrowane)</span>
+            </div>
+            <canvas id="m1Canvas" width="640" height="380" class="w-full rounded-lg bg-slate-50/50 border border-slate-200"></canvas>
+          </div>
+
+          <!-- Bottom Variance Curve Chart (Plotly) -->
+          <div class="bg-white p-3 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center text-xs text-slate-500 mb-1 px-1">
+              <span class="font-semibold text-slate-700">Wariancja Rzutu \(V(\theta)\) w Pełnym Zakresie Kąta \([0^\circ, 180^\circ]\)</span>
+              <span class="text-blue-600 font-mono text-[11px]">Kropka: bieżące \(\theta\)</span>
+            </div>
+            <div id="m1PlotVarianceCurve" style="height: 160px;" class="w-full"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODUŁ 2: Wyprowadzenie Matematyczne Krok po Kroku -->
+    <section id="module2" class="saas-card p-6 sm:p-8">
+      <div class="border-b border-slate-200 pb-4 mb-6">
+        <span class="badge-pill bg-indigo-100 text-indigo-800">Moduł 2</span>
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+          Rygor Analityczny: Wyprowadzenie PCA przez Mnożniki Lagrange'a i SVD
+        </h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Od formalnego postawienia problemu optymalizacyjnego z więzami do twierdzenia spektralnego
+        </p>
+      </div>
+
+      <div class="space-y-6">
+        
+        <!-- Step 1: Centering -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+            <h4 class="font-bold text-slate-900 text-sm">Krok 1: Centrowanie Macierzy Danych (Odejście od Średniej)</h4>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed mb-3">
+            Niech \(X \in \mathbb{R}^{n \times d}\) będzie macierzą \(n\) obserwacji w \(d\) wymiarach. Pierwszym bezwzględnym krokiem jest odjęcie średniej od każdej kolumny:
+          </p>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono-math text-center text-xs">
+            \[\tilde{X} = X - \mathbf{1}\mu^T, \quad \text{gdzie } \mu = \frac{1}{n} \sum_{i=1}^n x_i \in \mathbb{R}^d\]
+          </div>
+          <div class="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 mt-2">
+            <strong>⚠️ Dlaczego centrowanie jest krytyczne?</strong> Gdybyśmy pominęli centrowanie, pierwsza składowa wskazywałaby wektor od początku układu współrzędnych \((0,0)\) do środka ciężkości chmury punktów, a nie kierunek maksymalnej zmienności wewnątrz zbioru!
+          </div>
+        </div>
+
+        <!-- Step 2: Covariance Matrix -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+            <h4 class="font-bold text-slate-900 text-sm">Krok 2: Macierz Kowariancji Próbki i Wariancja Rzutu</h4>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed mb-3">
+            Dla wycentrowanych danych macierz kowariancji \(\Sigma \in \mathbb{R}^{d \times d}\) definiujemy jako iloczyn skalarny kolumn:
+          </p>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono-math text-center text-xs">
+            \[\Sigma = \frac{1}{n-1} \tilde{X}^T \tilde{X}\]
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed my-2">
+            Rzutujemy każdy punkt \(x_i\) na wektor jednostkowy \(u \in \mathbb{R}^d\) (\(\|u\|_2 = 1\)). Współrzędna rzutu to \(z_i = x_i^T u\). Ponieważ \(\mathbb{E}[z] = 0\), wariancja rzutów wynosi:
+          </p>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono-math text-center text-xs text-blue-700 font-bold">
+            \[\text{Var}(z) = \frac{1}{n-1} \sum_{i=1}^n (x_i^T u)^2 = \frac{1}{n-1} (\tilde{X}u)^T (\tilde{X}u) = u^T \left( \frac{1}{n-1} \tilde{X}^T \tilde{X} \right) u = u^T \Sigma u\]
+          </div>
+        </div>
+
+        <!-- Step 3: Lagrange -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+            <h4 class="font-bold text-slate-900 text-sm">Krok 3: Optymalizacja z Więzami (Mnożnik Lagrange'a)</h4>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed mb-3">
+            Chcemy zmaksymalizować \(u^T \Sigma u\) pod warunkiem, że \(u\) ma długość jednostkową (\(u^T u = 1\)). Bez tego ograniczenia moglibyśmy zwiększać wariancję w nieskończoność, po prostu wydłużając wektor \(u\). Tworzymy funkcję Lagrange'a:
+          </p>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono-math text-center text-xs">
+            \[\mathcal{L}(u, \lambda) = u^T \Sigma u - \lambda (u^T u - 1)\]
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed my-2">
+            Wyznaczamy gradient względem wektora \(u\) i przyrównujemy go do wektora zerowego:
+          </p>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono-math text-center text-xs">
+            \[\nabla_u \mathcal{L} = 2 \Sigma u - 2 \lambda u = \mathbf{0} \implies \Sigma u = \lambda u\]
+          </div>
+          <div class="formula-callout-emerald mt-3">
+            <div class="font-bold text-emerald-950 text-xs mb-1">💡 Złoty Wniosek Algebry:</div>
+            <p class="text-xs text-emerald-900 leading-relaxed">
+              Warunek stacjonarny \(\Sigma u = \lambda u\) oznacza, że <strong>wektor \(u\) musi być wektorem własnym</strong> macierzy kowariancji \(\Sigma\), a \(\lambda\) odpowiadającą mu <strong>wartością własną</strong>!
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4: Maximization and SVD connection -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">4</span>
+            <h4 class="font-bold text-slate-900 text-sm">Krok 4: Wartość Maksymalna i Równoważność z SVD</h4>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed mb-3">
+            Wstawiając równanie \(\Sigma u = \lambda u\) z powrotem do wzoru na wariancję:
+          </p>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono-math text-center text-xs">
+            \[\text{Var}(z) = u^T \Sigma u = u^T (\lambda u) = \lambda (u^T u) = \lambda \cdot 1 = \lambda\]
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed my-2">
+            Wariancja wzdłuż osi \(u\) jest <strong>dokładnie równa wartości własnej \(\lambda\)</strong>! Aby zmaksymalizować wariancję, wybieramy wektor własny powiązany z <strong>największą wartością własną</strong> \(\lambda_1\). To jest <strong>Główna Składowa 1 (\(PC_1\))</strong>. Drugą składową (\(PC_2\)) wyznaczamy pod dodatkowym warunkiem ortogonalności \(u_2^T u_1 = 0\), co daje drugi co do wielkości wektor własny \(\lambda_2\).
+          </p>
+
+          <!-- SVD comparison table -->
+          <div class="mt-4 pt-3 border-t border-slate-200">
+            <h5 class="text-xs font-bold text-slate-900 mb-2">Dlaczego algorytmy numeryczne (scikit-learn) liczą SVD zamiast \(\Sigma\)?</h5>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-slate-200 rounded-lg overflow-hidden">
+                <thead class="bg-slate-100 text-slate-700 font-bold">
+                  <tr>
+                    <th class="p-2.5 border-b border-slate-200">Własność</th>
+                    <th class="p-2.5 border-b border-slate-200">Eigendecomposition (\(\Sigma = \frac{1}{n} X^T X\))</th>
+                    <th class="p-2.5 border-b border-slate-200">Rozkład SVD (\(X = U S V^T\))</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 bg-white text-slate-600">
+                  <tr>
+                    <td class="p-2.5 font-semibold text-slate-800">Precyzja numeryczna</td>
+                    <td class="p-2.5 text-rose-700">Podwojenie uwarunkowania \(\kappa(X^T X) = \kappa(X)^2\) (utrata cyfr znaczących)</td>
+                    <td class="p-2.5 text-emerald-700 font-semibold">Zachowanie precyzji \(\kappa(X)\), brak jawnego mnożenia \(X^T X\)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold text-slate-800">Złożoność pamięciowa</td>
+                    <td class="p-2.5">Wymaga alokacji macierzy \(d \times d\) w pamięci RAM</td>
+                    <td class="p-2.5">Możliwość liczenia algorytmami strumieniowymi (Randomized SVD)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold text-slate-800">Relacja matematyczna</td>
+                    <td class="p-2.5 font-mono">\(\Sigma v_i = \lambda_i v_i\)</td>
+                    <td class="p-2.5 font-mono">Wektory własne \(v_i\) to kolumny \(V\), \(\lambda_i = \frac{s_i^2}{n-1}\)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODUŁ 3: Interaktywny Sandbox PCA 2D -->
+    <section id="module3" class="saas-card p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+        <div>
+          <span class="badge-pill bg-emerald-100 text-emerald-800">Moduł 3</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+            Dotykowy Symulator PCA 2D: Chmura Punktów, Elipsa i De-korelacja
+          </h3>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+          Sprzężone Widoki (Baza Oryginalna vs PCA)
+        </span>
+      </div>
+
+      <div class="prose max-w-none text-slate-600 text-sm leading-relaxed mb-6">
+        <p>
+          W tym laboratorium możesz w czasie rzeczywistym manipulować macierzą kowariancji populacji: zmieniać korelację między cechami \(\rho\), ich wariancje oraz kąt obrotu. Obserwuj jak składowe \(PC_1\) i \(PC_2\) dostosowują się do kształtu elipsy, a prawy wykres pokazuje punkty w nowym układzie współrzędnych, gdzie <strong>kowariancja wynosi idealnie zero</strong>.
+        </p>
+      </div>
+
+      <!-- Coachmark Box -->
+      <div class="coachmark-box mb-6">
+        <div class="flex items-start gap-3">
+          <span class="text-blue-600 text-lg leading-none">👉</span>
+          <div class="text-xs text-blue-900 leading-relaxed">
+            <strong>Jak z tego korzystać:</strong>
+            1. Zmień suwak <strong>Korelacja Cech \(\rho\)</strong> na wartość bliską \(+0.95\) lub \(-0.95\). Zauważ jak chmura spłaszcza się w jedną linię, a wariancja \(PC_1\) pochłania ponad 95% informacji!
+            2. Spójrz na <strong>Prawy Wykres (Przestrzeń PCA)</strong>: punkty są wyprostowane, a elipsa jest idealnie wyrównana z osiami.
+            3. Obserwuj macierz kowariancji w panelu dolnym: elementy pozadiagonalne po prawej stronie wynoszą \(0.00\).
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Dynamic Sliders -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 mb-6">
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label for="m3SliderRho" class="text-xs font-bold text-slate-700">Korelacja \(\rho\):</label>
+            <span id="m3ValRho" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">0.80</span>
+          </div>
+          <input type="range" id="m3SliderRho" min="-0.95" max="0.95" step="0.05" value="0.80">
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+            <span>-0.95</span>
+            <span>0</span>
+            <span>+0.95</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label for="m3SliderVar1" class="text-xs font-bold text-slate-700">Wariancja \(X_1\) (\(\sigma_1^2\)):</label>
+            <span id="m3ValVar1" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">2.50</span>
+          </div>
+          <input type="range" id="m3SliderVar1" min="0.5" max="5.0" step="0.25" value="2.50">
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+            <span>0.5</span>
+            <span>2.5</span>
+            <span>5.0</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label for="m3SliderVar2" class="text-xs font-bold text-slate-700">Wariancja \(X_2\) (\(\sigma_2^2\)):</label>
+            <span id="m3ValVar2" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">1.20</span>
+          </div>
+          <input type="range" id="m3SliderVar2" min="0.5" max="5.0" step="0.25" value="1.20">
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+            <span>0.5</span>
+            <span>2.5</span>
+            <span>5.0</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label for="m3SliderPoints" class="text-xs font-bold text-slate-700">Liczba Próbek \(N\):</label>
+            <span id="m3ValPoints" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">150</span>
+          </div>
+          <input type="range" id="m3SliderPoints" min="50" max="400" step="25" value="150">
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+            <span>50</span>
+            <span>200</span>
+            <span>400</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-Side Plots (Plotly) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Plot A: Original Space -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200">
+          <div class="flex justify-between items-center mb-2">
+            <div>
+              <span class="text-xs font-bold text-slate-800">Przestrzeń Oryginalna \((X_1, X_2)\)</span>
+              <p class="text-[11px] text-slate-500">Z wektorami własnymi i elipsą kowariancji</p>
+            </div>
+            <div class="flex items-center gap-2 text-[10px] font-mono">
+              <span class="inline-flex items-center gap-1 text-blue-600 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span> PC1</span>
+              <span class="inline-flex items-center gap-1 text-emerald-600 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span> PC2</span>
+            </div>
+          </div>
+          <div id="m3PlotOriginal" style="height: 360px;" class="w-full"></div>
+        </div>
+
+        <!-- Plot B: Transformed Space -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200">
+          <div class="flex justify-between items-center mb-2">
+            <div>
+              <span class="text-xs font-bold text-slate-800">Przestrzeń Głównych Składowych \((PC_1, PC_2)\)</span>
+              <p class="text-[11px] text-slate-500">Po rotacji do nowej bazy ortonormalnej</p>
+            </div>
+            <span class="badge-pill bg-emerald-100 text-emerald-800 text-[10px]">Cov(PC1, PC2) = 0</span>
+          </div>
+          <div id="m3PlotTransformed" style="height: 360px;" class="w-full"></div>
+        </div>
+
+      </div>
+
+      <!-- Real-time Mathematical Output Strip -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-200">
+        
+        <!-- Covariance Matrix Comparison -->
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Macierz Kowariancji \(\Sigma\) (Oryginał)</div>
+          <div class="font-mono text-xs bg-white p-2.5 rounded border border-slate-200 text-slate-800">
+            <div>[ <span id="m3Cov00">2.50</span>,  <span id="m3Cov01">1.40</span> ]</div>
+            <div>[ <span id="m3Cov10">1.40</span>,  <span id="m3Cov11">1.20</span> ]</div>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1">Elementy pozadiagonalne \(\neq 0\) (korelacja)</div>
+        </div>
+
+        <!-- Transformed Covariance Matrix -->
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Macierz Kowariancji w Bazie PCA</div>
+          <div class="font-mono text-xs bg-white p-2.5 rounded border border-slate-200 text-emerald-700 font-bold">
+            <div>[ <span id="m3CovPca00">3.45</span>,  <span id="m3CovPca01">0.00</span> ]</div>
+            <div>[ <span id="m3CovPca10">0.00</span>,  <span id="m3CovPca11">0.25</span> ]</div>
+          </div>
+          <div class="text-[10px] text-emerald-600 mt-1">Czysta macierz diagonalna \(\Lambda = \text{diag}(\lambda_1, \lambda_2)\)</div>
+        </div>
+
+        <!-- Explained Variance Ratio -->
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Wartości Własne & Wyjaśniona Wariancja</div>
+          <div class="space-y-1.5 text-xs font-mono">
+            <div class="flex justify-between items-center">
+              <span class="text-blue-700 font-bold">\(\lambda_1\) (PC1):</span>
+              <span id="m3OutLambda1" class="font-bold text-slate-800">--</span>
+              <span id="m3OutVarRatio1" class="text-blue-600 font-bold">--%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-emerald-700 font-bold">\(\lambda_2\) (PC2):</span>
+              <span id="m3OutLambda2" class="font-bold text-slate-800">--</span>
+              <span id="m3OutVarRatio2" class="text-emerald-600 font-bold">--%</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2 mt-2 overflow-hidden flex">
+            <div id="m3BarRatio1" class="bg-blue-600 h-full transition-all duration-150" style="width: 80%"></div>
+            <div id="m3BarRatio2" class="bg-emerald-500 h-full transition-all duration-150" style="width: 20%"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODUŁ 4: Redukcja Wymiarowości & Wykres Osypiska (Scree Plot) -->
+    <section id="module4" class="saas-card p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+        <div>
+          <span class="badge-pill bg-amber-100 text-amber-800">Moduł 4</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+            Wielowymiarowa Redukcja: Rzut 3D \(\to\) 2D oraz Wykres Osypiska (Scree Plot)
+          </h3>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+          Kryterium Łokcia i Kaisera
+        </span>
+      </div>
+
+      <div class="prose max-w-none text-slate-600 text-sm leading-relaxed mb-6">
+        <p>
+          W praktycznych zastosowaniach dane posiadają dziesiątki lub setki wymiarów. Jak zdecydować, ile głównych składowych \(k\) zachować? Wykorzystujemy <strong>Wykres Osypiska (Scree Plot)</strong> oraz wskaźnik skumulowanej wariancji (Cumulative Explained Variance).
+        </p>
+      </div>
+
+      <!-- Coachmark Box -->
+      <div class="coachmark-box mb-6">
+        <div class="flex items-start gap-3">
+          <span class="text-blue-600 text-lg leading-none">👉</span>
+          <div class="text-xs text-blue-900 leading-relaxed">
+            <strong>Jak z tego korzystać:</strong>
+            1. Przesuwaj suwak <strong>Pożądany Próg Wariancji (%)</strong> i sprawdź, jak automatycznie dobierana jest optymalna liczba składowych \(k^*\).
+            2. Po lewej stronie możesz obracać myszką trójwymiarową chmurę punktów w przestrzeni 3D z naniesioną płaszczyzną rzutowania \(PC_1 - PC_2\).
+            3. Spójrz na punkt przegięcia (łokieć) na wykresie osypiska po prawej stronie.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left: 3D Visualization of PCA Plane (Plotly 3D) -->
+        <div class="lg:col-span-6 bg-white p-4 rounded-xl border border-slate-200">
+          <div class="flex justify-between items-center mb-2">
+            <div>
+              <span class="text-xs font-bold text-slate-800">Chmura 3D z Płaszczyzną Projekcji \(PC_1 - PC_2\)</span>
+              <p class="text-[11px] text-slate-500">Obracaj i przybliżaj wykres myszką</p>
+            </div>
+            <button id="m4BtnReset3D" class="text-[11px] px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+              Reset Kamery
+            </button>
+          </div>
+          <div id="m4Plot3D" style="height: 380px;" class="w-full"></div>
+        </div>
+
+        <!-- Right: Scree Plot & Cutoff Slider (Plotly) -->
+        <div class="lg:col-span-6 bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <div>
+                <span class="text-xs font-bold text-slate-800">Wykres Osypiska (Scree Plot) dla 8 Zmiennych</span>
+                <p class="text-[11px] text-slate-500">Słupki: wariancja składowej • Linia: suma skumulowana</p>
+              </div>
+              <span id="m4BadgeComponents" class="badge-pill bg-blue-100 text-blue-800 text-xs font-mono font-bold">k* = 2 składowe</span>
+            </div>
+
+            <!-- Cutoff Slider -->
+            <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 mb-3">
+              <div class="flex justify-between items-center mb-1">
+                <label for="m4SliderThreshold" class="text-xs font-bold text-slate-700">Pożądany Próg Wariancji:</label>
+                <span id="m4ValThreshold" class="font-mono text-xs font-bold text-blue-700">85%</span>
+              </div>
+              <input type="range" id="m4SliderThreshold" min="50" max="99" step="1" value="85">
+              <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+                <span>50%</span>
+                <span>85% (Standard)</span>
+                <span>99%</span>
+              </div>
+            </div>
+
+            <div id="m4PlotScree" style="height: 250px;" class="w-full"></div>
+          </div>
+
+          <!-- Diagnostic summary -->
+          <div class="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-slate-200">
+            <div class="bg-slate-50 p-2.5 rounded border border-slate-200 text-xs">
+              <span class="text-slate-500 font-semibold block text-[10px] uppercase">Kryterium Łokcia (Elbow)</span>
+              <span class="font-bold text-slate-800">Punkt nasycenia: k = 2</span>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded border border-slate-200 text-xs">
+              <span class="text-slate-500 font-semibold block text-[10px] uppercase">Kryterium Kaisera</span>
+              <span class="font-bold text-emerald-700">Zachowaj gdy \(\lambda_i > 1.0\)</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODUŁ 5: Kardynalne Pułapki i Praktyka Inżynierska -->
+    <section id="module5" class="saas-card p-6 sm:p-8">
+      <div class="border-b border-slate-200 pb-4 mb-6">
+        <span class="badge-pill bg-rose-100 text-rose-800">Moduł 5</span>
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+          Kardynalne Pułapki i Diagnostyka PCA w Środowisku Produkcyjnym
+        </h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Kiedy PCA zawodzi i dlaczego 90% błędów w pipeline'ach ML wynika z braku skalowania
+        </p>
+      </div>
+
+      <!-- Pitfall Tabs / Interactive Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Pitfall 1: StandardScaler -->
+        <div class="bg-slate-50/80 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                <span class="text-rose-600">⚠️</span> 1. Brak Standaryzacji (Z-Score)
+              </h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 uppercase">Krytyczny</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+              PCA maksymalizuje wariancję numeryczną. Jeśli cecha A ma zakres \(0 - 1\) (np. wiek w stuleciach), a cecha B zakres \(0 - 100\,000\) (np. roczny dochód w PLN), wariancja cechy B jest miliony razy większa wyłącznie z powodu jednostki!
+            </p>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs space-y-2">
+              <div class="flex justify-between items-center text-[11px]">
+                <span class="text-slate-600">Eksperyment: Skalowanie cech:</span>
+                <button id="m5BtnToggleScale" class="px-2.5 py-1 rounded bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-colors">
+                  Przełącz: StandardScaler WŁĄCZONY
+                </button>
+              </div>
+              <div id="m5ScaleStatusText" class="text-[11px] text-emerald-700 font-semibold bg-emerald-50 p-2 rounded border border-emerald-200">
+                ✅ Obie cechy mają \(\mu=0, \sigma=1\). PCA widzi rzeczywistą korelację geometryczną.
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500">
+            <strong>Zasada:</strong> Zawsze stosuj <code>StandardScaler()</code> przed PCA, chyba że wszystkie cechy mierzą to samo zjawisko w tych samych jednostkach fizycznych (np. piksele obrazu).
+          </div>
+        </div>
+
+        <!-- Pitfall 2: Non-linear Manifolds -->
+        <div class="bg-slate-50/80 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                <span class="text-amber-600">⚡</span> 2. Liniowość a Nieliniowe Rozmaitości
+              </h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 uppercase">Architektura</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+              PCA to transformacja czysto liniowa (rotacja i rzut). Jeśli dane leżą na nieliniowej rozmaitości (np. zawinięty biszkopt <em>Swiss Roll</em> lub dwa koncentryczne pierścienie), rzut liniowy bezpowrotnie zmiażdży strukturę klas.
+            </p>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs">
+              <div class="text-[11px] font-semibold text-slate-700 mb-1">Kiedy zastąpić PCA innymi metodami?</div>
+              <ul class="space-y-1 text-slate-600 list-disc list-inside text-[11px]">
+                <li><strong>t-SNE / UMAP:</strong> Do wizualizacji klastrów o skomplikowanej topologii nieliniowej.</li>
+                <li><strong>Kernel PCA:</strong> Gdy chcesz zachować ramy PCA, ale z funkcją jądrową RBF.</li>
+                <li><strong>Autoenkodery:</strong> Do nieliniowej kompresji danych przy dużych wolumenach.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500">
+            <strong>Zasada:</strong> PCA nie rozwija zakrzywionych przestrzeni; znajduje jedynie płaską hiper-płaszczyznę o maksymalnym rzucie.
+          </div>
+        </div>
+
+        <!-- Pitfall 3: Outliers Sensitivity -->
+        <div class="bg-slate-50/80 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                <span class="text-rose-600">💥</span> 3. Ekstremalna Wrażliwość na Outliery
+              </h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 uppercase">Odporność</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+              Ponieważ macierz kowariancji bazuje na sumie kwadratów odchyleń od średniej (\((x_i - \mu)^2\)), pojedynczy skrajny punkt odstający (outlier) może drastycznie obrócić wektory własne o kilkadziesiąt stopni.
+            </p>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs p-2.5">
+              <div class="font-semibold text-slate-800 mb-1">Rozwiązania inżynierskie:</div>
+              <div class="text-[11px] text-slate-600 space-y-1">
+                <div>• Wstępne oczyszczenie danych (odrzucenie punktów o odległości Mahalanobisa \(> 3\sigma\)).</div>
+                <div>• Stosowanie wariantu <strong>Robust PCA</strong> (np. estymator kowariancji Minimum Covariance Determinant - MCD).</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500">
+            <strong>Zasada:</strong> Zawsze diagnozuj rozkład danych i wartości skrajne przed dopasowaniem PCA.
+          </div>
+        </div>
+
+        <!-- Pitfall 4: Unsupervised Nature -->
+        <div class="bg-slate-50/80 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                <span class="text-blue-600">🎯</span> 4. PCA jest Nienadzorowane (Brak Etykiet Y)
+              </h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 uppercase">Uczenie ML</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+              PCA optymalizuje wariancję w przestrzeni wejściowej \(X\), zupełnie nie wiedząc o zmiennej docelowej \(y\). Kierunek o największej wariancji (\(PC_1\)) może być dominującym szumem tła, podczas gdy kluczowy sygnał dyskryminacyjny dla klasyfikacji kryje się w składowej o niskiej wariancji (\(PC_3\))!
+            </p>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs p-2.5">
+              <div class="font-semibold text-slate-800 mb-1">Alternatywa nadzorowana:</div>
+              <div class="text-[11px] text-slate-600">
+                W zadaniach klasyfikacji z etykietami często lepszy jest <strong>LDA (Linear Discriminant Analysis)</strong>, który maksymalizuje wariancję <em>międzyklasową</em> względem <em>wewnątrzklasowej</em>.
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500">
+            <strong>Zasada:</strong> Redukcja PCA przed modelem predykcyjnym nie gwarantuje poprawy metryki AUC/F1.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODUŁ 6: Sprawdzian Zrozumienia (Quiz Interaktywny) -->
+    <section id="module6" class="saas-card p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+        <div>
+          <span class="badge-pill bg-emerald-100 text-emerald-800">Moduł 6</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+            Sprawdzian Zrozumienia: Quiz Koncepcyjny Lyceum
+          </h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500">Twój wynik:</span>
+          <span id="quizScoreBadge" class="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-800">
+            0 / 5
+          </span>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        
+        <!-- Question 1 -->
+        <div class="quiz-item p-5 rounded-xl border border-slate-200 bg-white" data-q="1">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold text-slate-900 text-sm">
+              1. Dlaczego maksymalizacja wariancji rzutu danych jest matematycznie równoważna minimalizacji średniokwadratowego błędu rekonstrukcji?
+            </h4>
+            <span class="text-[11px] font-mono text-slate-400">Pytanie 1/5</span>
+          </div>
+          <div class="space-y-2 options-container">
+            <button class="quiz-option-btn" data-opt="A">
+              <span>A.</span>
+              <span>Wynika to z faktu, że macierz kowariancji jest zawsze antysymetryczna.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="B">
+              <span>B.</span>
+              <span>Z twierdzenia Pitagorasa: kwadrat odległości punktu od początku układu to suma kwadratu rzutu i kwadratu błędu. Ponieważ dane są stałe, ich suma jest stała.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="C">
+              <span>C.</span>
+              <span>Jest to przybliżenie empiryczne, które zachodzi tylko wtedy, gdy dane pochodzą z rozkładu Cauchy'ego.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="D">
+              <span>D.</span>
+              <span>Te dwa kryteria nie są równoważne; minimalizacja błędu daje wektory o innych kierunkach niż maksymalizacja wariancji.</span>
+            </button>
+          </div>
+          <div class="feedback-box hidden mt-3 p-3 rounded-lg text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-item p-5 rounded-xl border border-slate-200 bg-white" data-q="2">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold text-slate-900 text-sm">
+              2. Jaka jest kowariancja między dwiema różnymi głównymi składowymi (\(PC_i\) oraz \(PC_j\) dla \(i \neq j\)) w nowej przestrzeni?
+            </h4>
+            <span class="text-[11px] font-mono text-slate-400">Pytanie 2/5</span>
+          </div>
+          <div class="space-y-2 options-container">
+            <button class="quiz-option-btn" data-opt="A">
+              <span>A.</span>
+              <span>Zawsze dokładnie 0 (składowe są całkowicie nieskorelowane liniowo).</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="B">
+              <span>B.</span>
+              <span>Jest równa iloczynowi wartości własnych \(\lambda_i \lambda_j\).</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="C">
+              <span>C.</span>
+              <span>Zależy od liczby obserwacji \(n\) i zbliża się do 1 dla dużych prób.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="D">
+              <span>D.</span>
+              <span>Jest równa średniej arytmetycznej pierwotnych kowariancji w macierzy \(\Sigma\).</span>
+            </button>
+          </div>
+          <div class="feedback-box hidden mt-3 p-3 rounded-lg text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-item p-5 rounded-xl border border-slate-200 bg-white" data-q="3">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold text-slate-900 text-sm">
+              3. Wykonujesz PCA na zbiorze danych z dwiema cechami: wzrost w metrach (np. 1.75 m) oraz zarobki w złotówkach (np. 80 000 zł) bez uprzedniej standaryzacji. Co się stanie?
+            </h4>
+            <span class="text-[11px] font-mono text-slate-400">Pytanie 3/5</span>
+          </div>
+          <div class="space-y-2 options-container">
+            <button class="quiz-option-btn" data-opt="A">
+              <span>A.</span>
+              <span>PCA automatycznie znormalizuje skale cech podczas liczenia wektorów własnych.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="B">
+              <span>B.</span>
+              <span>Wzrost zdominuje analizę, ponieważ ma mniejsze wartości bezwzględne.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="C">
+              <span>C.</span>
+              <span>Pierwsza główna składowa \(PC_1\) pokryje się niemal w 100% z osią zarobków wyłącznie z powodu arbitralnie dużej jednostki walutowej.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="D">
+              <span>D.</span>
+              <span>Algorytm zgłosi błąd dzielenia przez zero przy obliczaniu wyznacznika.</span>
+            </button>
+          </div>
+          <div class="feedback-box hidden mt-3 p-3 rounded-lg text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="quiz-item p-5 rounded-xl border border-slate-200 bg-white" data-q="4">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold text-slate-900 text-sm">
+              4. Dlaczego biblioteka scikit-learn oblicza PCA przez dekompozycję SVD macierzy danych \(X\), a nie przez obliczenie macierzy kowariancji \(\frac{1}{n}X^T X\)?
+            </h4>
+            <span class="text-[11px] font-mono text-slate-400">Pytanie 4/5</span>
+          </div>
+          <div class="space-y-2 options-container">
+            <button class="quiz-option-btn" data-opt="A">
+              <span>A.</span>
+              <span>Obliczenie iloczynu \(X^T X\) podwaja wskaźnik uwarunkowania macierzy \(\kappa(X)\), powodując utratę precyzji numerycznej w arytmetyce zmiennoprzecinkowej.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="B">
+              <span>B.</span>
+              <span>SVD pozwala na obsługę danych kategorycznych bez kodowania One-Hot.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="C">
+              <span>C.</span>
+              <span>Macierz kowariancji nie posiada wektorów własnych dla zbiorów o liczbie wierszy mniejszej niż 1000.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="D">
+              <span>D.</span>
+              <span>Tylko dlatego, że w Pythonie biblioteka LAPACK nie posiada funkcji do macierzy symetrycznych.</span>
+            </button>
+          </div>
+          <div class="feedback-box hidden mt-3 p-3 rounded-lg text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="quiz-item p-5 rounded-xl border border-slate-200 bg-white" data-q="5">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold text-slate-900 text-sm">
+              5. Masz zadanie klasyfikacji binarnej chory/zdrowy. Czy zredukowanie cech do \(PC_1\) gwarantuje zachowanie najlepszej separowalności klas?
+            </h4>
+            <span class="text-[11px] font-mono text-slate-400">Pytanie 5/5</span>
+          </div>
+          <div class="space-y-2 options-container">
+            <button class="quiz-option-btn" data-opt="A">
+              <span>A.</span>
+              <span>Tak, ponieważ \(PC_1\) zawsze zawiera optymalną płaszczyznę decyzyjną według twierdzenia Bayesa.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="B">
+              <span>B.</span>
+              <span>Nie, ponieważ PCA jest metodą nienadzorowaną i maksymalizuje ogólną wariancję danych \(X\), która może wynikać ze zmiennych niezwiązanych z chorobą (np. wiek pacjentów lub szum aparatury).</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="C">
+              <span>C.</span>
+              <span>Tak, pod warunkiem że użyto jądra wielomianowego o stopniu 3.</span>
+            </button>
+            <button class="quiz-option-btn" data-opt="D">
+              <span>D.</span>
+              <span>Tylko wtedy, gdy liczba cech jest większa od liczby pacjentów.</span>
+            </button>
+          </div>
+          <div class="feedback-box hidden mt-3 p-3 rounded-lg text-xs leading-relaxed"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODUŁ 7: Produkcyjna Implementacja (Python / NumPy / scikit-learn) -->
+    <section id="module7" class="saas-card p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+        <div>
+          <span class="badge-pill bg-slate-900 text-white">Moduł 7</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+            Produkcyjna Implementacja w Pythonie
+          </h3>
+        </div>
+        <button id="btnCopyCode" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-colors shadow-sm">
+          <span id="copyIcon">📋</span> <span id="copyLabel">Kopiuj aktywny skrypt</span>
+        </button>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex border-b border-slate-200 gap-2 mb-4">
+        <button class="code-tab-btn px-4 py-2 text-xs font-bold border-b-2 border-blue-600 text-blue-600" data-tab="numpy-cov">
+          NumPy: Eigendecomposition (Krok po Kroku)
+        </button>
+        <button class="code-tab-btn px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800" data-tab="numpy-svd">
+          NumPy: Singular Value Decomposition (SVD)
+        </button>
+        <button class="code-tab-btn px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800" data-tab="sklearn">
+          scikit-learn: Pipeline ze StandardScaler
+        </button>
+      </div>
+
+      <!-- Code Blocks Container -->
+      <div class="bg-slate-900 rounded-xl p-4 text-slate-100 overflow-x-auto shadow-inner">
+        
+        <!-- Tab 1: NumPy Covariance -->
+        <div id="codeTab-numpy-cov" class="code-tab-content">
+          <pre><code class="text-xs text-slate-200">import numpy as np
+
+def pca_from_scratch(X: np.ndarray, n_components: int = 2):
+    """
+    Pełna implementacja PCA od zera w NumPy przez macierz kowariancji.
+    
+    Kroki:
+    1. Centrowanie kolumn (odjęcie średniej)
+    2. Obliczenie macierzy kowariancji Sigma = (1 / (n-1)) * X^T X
+    3. Wyznaczenie wektorów i wartości własnych (np.linalg.eigh)
+    4. Sortowanie malejące wg wartości własnych
+    5. Wybór k wektorów własnych (macierz projekcji W)
+    6. Rzutowanie: Z = X_centered @ W
+    """
+    n_samples, n_features = X.shape
+    
+    # Krok 1: Centrowanie
+    mean = np.mean(X, axis=0)
+    X_centered = X - mean
+    
+    # Krok 2: Macierz kowariancji (unbiased sample covariance, ddof=1)
+    cov_matrix = np.cov(X_centered, rowvar=False)
+    
+    # Krok 3: Wartości i wektory własne (dla macierzy symetrycznych eigh jest stabilniejsze)
+    eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+    
+    # Krok 4: Sortowanie malejące
+    idx = np.argsort(eigenvalues)[::-1]
+    eigenvalues = eigenvalues[idx]
+    eigenvectors = eigenvectors[:, idx]
+    
+    # Krok 5: Wybór pierwszych n_components wektorów
+    components = eigenvectors[:, :n_components]
+    
+    # Krok 6: Rzutowanie do nowej bazy
+    X_projected = np.dot(X_centered, components)
+    
+    # Obliczenie wskaźnika wyjaśnionej wariancji (EVR)
+    total_variance = np.sum(eigenvalues)
+    explained_variance_ratio = eigenvalues[:n_components] / total_variance
+    
+    return {
+        "projected_data": X_projected,
+        "components": components.T,  # kształt: (n_components, n_features)
+        "eigenvalues": eigenvalues[:n_components],
+        "explained_variance_ratio": explained_variance_ratio,
+        "mean": mean
+    }
+
+# Przykład użycia:
+if __name__ == "__main__":
+    np.random.seed(42)
+    # Chmura skorelowana: 100 próbek, 3 cechy
+    raw_data = np.random.multivariate_normal(
+        mean=[10, 20, 30],
+        cov=[[3.0, 2.5, 1.2],
+             [2.5, 4.0, 1.8],
+             [1.2, 1.8, 2.0]],
+        size=100
+    )
+    
+    res = pca_from_scratch(raw_data, n_components=2)
+    print("Wyjaśniona wariancja (PC1, PC2):", np.round(res["explained_variance_ratio"] * 100, 2), "%")
+    print("Kształt zredukowany:", res["projected_data"].shape)
+</code></pre>
+        </div>
+
+        <!-- Tab 2: NumPy SVD -->
+        <div id="codeTab-numpy-svd" class="code-tab-content hidden">
+          <pre><code class="text-xs text-slate-200">import numpy as np
+
+def pca_via_svd(X: np.ndarray, n_components: int = 2):
+    """
+    Standard przemysłowy: PCA przez dekompozycję pojedynczych wartości (SVD).
+    Unika jawnego obliczania X^T X, chroniąc przed utratą precyzji zmiennoprzecinkowej.
+    
+    X = U @ S @ V^T
+    - Kolumny macierzy V to dokładnie wektory własne macierzy kowariancji!
+    - Wartości własne: lambda_i = (s_i^2) / (n - 1)
+    """
+    n_samples, n_features = X.shape
+    
+    # 1. Centrowanie danych
+    mean = np.mean(X, axis=0)
+    X_centered = X - mean
+    
+    # 2. Pełny lub ekonomiczny rozkład SVD
+    # U: (n, n) lub (n, min(n,d)), s: (min(n,d),), Vt: (d, d)
+    U, s, Vt = np.linalg.svd(X_centered, full_matrices=False)
+    
+    # 3. Główne składowe (wiersze Vt lub kolumny V)
+    components = Vt[:n_components, :]
+    
+    # 4. Rzutowanie: X_projected = X_centered @ V = U[:, :k] * s[:k]
+    X_projected = np.dot(X_centered, components.T)
+    
+    # 5. Wyjaśniona wariancja
+    explained_variance = (s ** 2) / (n_samples - 1)
+    total_var = np.sum(explained_variance)
+    explained_variance_ratio = explained_variance[:n_components] / total_var
+    
+    return {
+        "projected_data": X_projected,
+        "components": components,
+        "singular_values": s[:n_components],
+        "explained_variance_ratio": explained_variance_ratio
+    }
+</code></pre>
+        </div>
+
+        <!-- Tab 3: scikit-learn Pipeline -->
+        <div id="codeTab-sklearn" class="code-tab-content hidden">
+          <pre><code class="text-xs text-slate-200">from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+import numpy as np
+
+# Złoty standard produkcyjny: zawsze łącz StandardScaler z PCA w potoku
+pca_pipeline = Pipeline([
+    ('scaler', StandardScaler()),                 # Krok 1: mu = 0, sigma = 1 dla każdej cechy
+    ('pca', PCA(n_components=0.95))              # Krok 2: Zachowaj tyle składowych, aby wyjaśnić 95% wariancji
+])
+
+# Przykładowe dane wejściowe
+X_sample = np.array([
+    [1.75, 85000, 32],
+    [1.82, 120000, 45],
+    [1.65, 45000, 24],
+    [1.90, 160000, 52],
+    [1.70, 72000, 29]
+])
+
+# Dopasowanie i transformacja
+X_reduced = pca_pipeline.fit_transform(X_sample)
+
+# Dostęp do dopasowanego obiektu PCA w potoku
+pca_step = pca_pipeline.named_steps['pca']
+
+print(f"Liczba wybranych składowych dla progu 95%: {pca_step.n_components_}")
+print(f"Wskaźnik wariancji każdej składowej: {pca_step.explained_variance_ratio_}")
+print(f"Skumulowana wariancja: {np.sum(pca_step.explained_variance_ratio_):.4f}")
+
+# Rekonstrukcja danych w oryginalnej przestrzeni
+X_reconstructed = pca_pipeline.inverse_transform(X_reduced)
+print(f"Kształt zrekonstruowany: {X_reconstructed.shape}")
+</code></pre>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="bg-white border-t border-slate-200 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded bg-blue-600 text-white font-bold flex items-center justify-center text-xs">L</span>
+        <span class="font-bold text-slate-700">Lyceum Explainer</span>
+        <span>— Osobiste Sanktuarium Samokształcenia & Nauki</span>
+      </div>
+      <div>
+        <span>Zgodność ze standardem <strong>SaaS Light EdTech</strong> • KaTeX • Plotly.js • HTML5 Canvas</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
