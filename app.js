@@ -23,6 +23,23 @@ document.addEventListener("DOMContentLoaded", function () {
   initModule5();
   initModule6();
   initModule7();
+
+  // Scrollspy dla lewego sidebara
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        document.querySelectorAll('.nav-link').forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('section[id]').forEach(sec => observer.observe(sec));
 });
 
 /* ==========================================================================
