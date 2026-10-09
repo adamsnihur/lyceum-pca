@@ -100,12 +100,51 @@ async def run_tests():
         print(f"SVD Tab visible: {svd_visible}")
         assert svd_visible is True
 
-        # Capture screenshots
+        # Quality Gate: SVG Text Clipping & DOM Overflow Check
+        print("Running Quality Gate: SVG Text Clipping & DOM Overflow Check...")
+        clipped_svg = await page.evaluate('''() => {
+            const issues = [];
+            document.querySelectorAll('svg').forEach(svg => {
+                const vb = svg.viewBox.baseVal;
+                if (!vb || vb.width === 0) return;
+                svg.querySelectorAll('text, tspan').forEach(t => {
+                    const text = t.textContent.trim();
+                    if (!text) return;
+                    try {
+                        const bbox = t.getBBox();
+                        if (bbox.x < vb.x - 2 || (bbox.x + bbox.width) > (vb.x + vb.width + 2)) {
+                            issues.push({ text: text, x: bbox.x, width: bbox.width, vb_x: vb.x, vb_w: vb.width });
+                        }
+                    } catch (e) {}
+                });
+            });
+            return issues;
+        }''')
+        print(f"SVG Text clipping issues found: {len(clipped_svg)}")
+        assert len(clipped_svg) == 0, f"Found clipped SVG text elements: {clipped_svg}"
+
+        # Multi-viewport responsive tests
+        viewports = [
+            ("Desktop 1440px", {"width": 1440, "height": 900}),
+            ("Tablet 768px", {"width": 768, "height": 1024}),
+            ("Mobile 375px", {"width": 375, "height": 812})
+        ]
+        for name, vp in viewports:
+            await page.set_viewport_size(vp)
+            await page.wait_for_timeout(300)
+            has_h_scroll = await page.evaluate('''() => {
+                return document.documentElement.scrollWidth > window.innerWidth + 2;
+            }''')
+            print(f"Viewport {name} -> Horizontal scroll detected: {has_h_scroll}")
+            assert not has_h_scroll, f"Horizontal scroll detected on {name}!"
+
+        # Reset viewport to 1440px and capture verified screenshot
+        await page.set_viewport_size({"width": 1440, "height": 900})
         screenshot_path = os.path.abspath("screenshot_verified.png")
         await page.screenshot(path=screenshot_path, full_page=True)
         print(f"Saved full-page screenshot to {screenshot_path}")
 
-        print("=== ALL 6 TEST GATES PASSED WITH 0 ERRORS ===")
+        print("=== ALL TEST GATES PASSED WITH 0 ERRORS ===")
         await browser.close()
 
 if __name__ == "__main__":

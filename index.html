@@ -65,6 +65,7 @@
       <a href="#module5" class="hover:text-blue-600 transition-colors">5. Pułapki Praktyczne</a>
       <a href="#module6" class="hover:text-blue-600 transition-colors">6. Quiz Sprawdzający</a>
       <a href="#module7" class="hover:text-blue-600 transition-colors">7. Kod Python</a>
+      <a href="#module8" class="hover:text-blue-600 transition-colors">8. Źródła & Bibliografia</a>
     </nav>
   </header>
 
@@ -933,7 +934,7 @@
     </section>
 
     <!-- MODUŁ 7: Produkcyjna Implementacja (Python / NumPy / scikit-learn) -->
-    <section id="module7" class="saas-card p-6 sm:p-8">
+    <section id="module7" class="saas-card p-6 sm:p-8 overflow-hidden">
       <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
         <div>
           <span class="badge-pill bg-slate-900 text-white">Moduł 7</span>
@@ -947,7 +948,7 @@
       </div>
 
       <!-- Tab Buttons -->
-      <div class="flex border-b border-slate-200 gap-2 mb-4">
+      <div class="flex border-b border-slate-200 gap-2 mb-4 overflow-x-auto whitespace-nowrap">
         <button class="code-tab-btn px-4 py-2 text-xs font-bold border-b-2 border-blue-600 text-blue-600" data-tab="numpy-cov">
           NumPy: Eigendecomposition (Krok po Kroku)
         </button>
@@ -1112,6 +1113,82 @@ print(f"Kształt zrekonstruowany: {X_reconstructed.shape}")
 </code></pre>
         </div>
 
+    <!-- MODUŁ 8: 📚 Źródła Pierwotne & Bibliografia Naukowa -->
+    <section id="module8" class="saas-card p-6 sm:p-8">
+      <div class="border-b border-slate-200 pb-4 mb-6">
+        <span class="badge-pill bg-blue-50 text-blue-700 border border-blue-200">Moduł 8 • Rygor Badawczy</span>
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+          📚 Źródła Pierwotne & Bibliografia Naukowa
+        </h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Wykaz literatury bazowej, artykułów założycielskich i przeglądowych pozyskanych z otwartych baz naukowych (OpenAlex, Phil. Mag., arXiv).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+          <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-1">
+            <span>Artykuł Założycielski (1901)</span>
+            <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">Pearson OLS / PCA</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1">
+            On Lines and Planes of Closest Fit to Systems of Points in Space
+          </h4>
+          <p class="text-slate-600 mb-2">
+            Karl Pearson. <em>Philosophical Magazine</em>, 6(2), 559-572 (1901). Pierwsze geometryczne sformułowanie ortogonalnego dopasowania hiperpłaszczyzny minimalizującej sumę kwadratów prostopadłych odległości.
+          </p>
+          <a href="https://doi.org/10.1080/14786440109462720" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+            <span>🔗 DOI: 10.1080/14786440109462720</span>
+          </a>
+        </div>
+
+        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+          <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-1">
+            <span>Algebra Macierzowa (1933)</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">Hotelling PCA</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1">
+            Analysis of a Complex of Statistical Variables into Principal Components
+          </h4>
+          <p class="text-slate-600 mb-2">
+            Harold Hotelling. <em>Journal of Educational Psychology</em>, 24(6), 417-441 (1933). Wprowadzenie algebry macierzowej, dekompozycji spektralnej macierzy kowariancji i współczesnego terminu "Principal Components".
+          </p>
+          <a href="https://doi.org/10.1037/h0071325" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+            <span>🔗 DOI: 10.1037/h0071325</span>
+          </a>
+        </div>
+
+        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+          <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-1">
+            <span>Monografia Kanoniczna (2016)</span>
+            <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-semibold">Royal Society</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1">
+            Principal Component Analysis: A Review and Recent Developments
+          </h4>
+          <p class="text-slate-600 mb-2">
+            Ian T. Jolliffe, Jorge Cadima. <em>Philosophical Transactions of the Royal Society A</em>, 374(2065), 20150202 (2016). Kompleksowy przegląd: Sparse PCA, Kernel PCA, Robust PCA oraz ograniczenia w wysokowymiarowej analizie danych.
+          </p>
+          <a href="https://doi.org/10.1098/rsta.2015.0202" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+            <span>🔗 DOI: 10.1098/rsta.2015.0202</span>
+          </a>
+        </div>
+
+        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+          <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-1">
+            <span>Tutorial & Pre-print (2014)</span>
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">arXiv Open Science</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1">
+            A Tutorial on Principal Component Analysis
+          </h4>
+          <p class="text-slate-600 mb-2">
+            Jonathon Shlens. <em>arXiv:1404.1100 [cs.LG]</em> (2014). Rygorystyczny dydaktycznie przewodnik po wyprowadzeniu PCA krok po kroku od wariancji i kowariancji po dekompozycję wartości osobliwych (SVD).
+          </p>
+          <a href="https://arxiv.org/abs/1404.1100" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+            <span>🔗 arXiv: 1404.1100</span>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -1123,7 +1200,7 @@ print(f"Kształt zrekonstruowany: {X_reconstructed.shape}")
       <div class="flex items-center gap-2">
         <span class="w-6 h-6 rounded bg-blue-600 text-white font-bold flex items-center justify-center text-xs">L</span>
         <span class="font-bold text-slate-700">Lyceum Explainer</span>
-        <span>— Osobiste Sanktuarium Samokształcenia & Nauki</span>
+        <span>- Osobiste Sanktuarium Samokształcenia & Nauki</span>
       </div>
       <div>
         <span>Zgodność ze standardem <strong>SaaS Light EdTech</strong> • KaTeX • Plotly.js • HTML5 Canvas</span>
